@@ -6,5 +6,4 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "sacn>=1.11.0",
-    "typer>=0.26.2",
 ]
