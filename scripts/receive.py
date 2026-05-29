@@ -1,9 +1,9 @@
 import time
 
-import sacn
+import lx
 
 # provide an IP-Address to bind to if you want to receive multicast packets from a specific interface
-receiver = sacn.sACNreceiver()
+receiver = lx.sACNreceiver()
 receiver.start()  # start the receiving thread
 
 # define a callback function

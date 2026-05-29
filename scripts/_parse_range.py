@@ -1,6 +1,8 @@
 from itertools import chain
 
-def parse_range(rng):
+from typing import Iterable
+
+def _parse_range(rng: str) -> range:
     parts = rng.split('-')
     if 1 > len(parts) > 2:
         raise ValueError("Bad range: '%s'" % (rng,))
@@ -11,14 +13,15 @@ def parse_range(rng):
         end, start = start, end
     return range(start, end + 1)
 
-def parse_range_list(rngs):
-    return sorted(set(chain(*[parse_range(rng) for rng in rngs.split(',')])))
+def parse_ranges_str(rngs: str):
+    # Turn a list like "1,2,3-5" into a list [1,2,3,4,5]
+    return sorted(set(chain(*[_parse_range(rng) for rng in rngs.split(',')])))
 
 # Source - https://stackoverflow.com/a/29418827
 # Posted by nvuono
 # Retrieved 2026-05-28, License - CC BY-SA 3.0
 
-def simplify_ranges(values):
+def abbreviate_ranges(values: list[int]) -> str:
     seq = []
     final = []
     last = 0

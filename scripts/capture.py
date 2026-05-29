@@ -2,38 +2,49 @@ import argparse
 import json
 import time
 import datetime
+from pathlib import Path
 
 import sacn
 
-from _parse_range import parse_range_list, simplify_ranges
+from _parse_range import parse_ranges_str, abbreviate_ranges
+from _utils import drive_device
 
 parser = argparse.ArgumentParser("Capture sacn at a point in time")
 
-parser.add_argument("-u", "--universes", type=str, help="a comma-separated list of universes to capture")
+parser.add_argument("-u", "--universes", required=True, type=str, help="a comma-separated list of universes to capture")
+parser.add_argument("-t", "--time", type=int, help="How long to record data for")
 
 if __name__ == "__main__":
     args = parser.parse_args()
 
-    #universes = [int(arg.strip()) for arg in args.universes.split(",")]
-    universes = parse_range_list(args.universes)
+    universes = parse_ranges_str(args.universes)
+    printable_ranges = abbreviate_ranges([int(d) for d in sorted(universes)])
     data: dict[int, tuple[int]] = {}
 
     receiver = sacn.sACNreceiver()
-    receiver.start()  # start the receiving thread
 
     for u in universes:
         def closure(univ = u):
-            @receiver.listen_on('universe', universe=univ)
             def callback(packet: sacn.DataPacket): 
                 if packet.dmxStartCode == 0x00:  # ignore non-DMX-data packets
                     if univ not in data:
                         data[univ] = packet.dmxData
+            receiver.register_listener('universe', callback, universe=univ)
             receiver.join_multicast(univ)
         closure()
 
-    print(f"Looking for data from universes {simplify_ranges([int(d) for d in sorted(universes)])}")
-    start = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    time.sleep(2)  # receive for 10 seconds
+    print(f"Looking for data from universes {printable_ranges}")
+    print(f"Gathering data for {args.time} seconds")
+    start = datetime.datetime.now()
+    with drive_device(receiver):
+        while datetime.datetime.now() - start < datetime.timedelta(seconds=args.time):
+            for seen in data.keys():
+                if receiver._callbacks[seen]:
+                    print(f"Removing callback from universe {seen}")
+                    receiver._callbacks[seen] = []
+                    receiver.leave_multicast(seen)
+            time.sleep(.1)
+
 
     # optional: if multicast was previously joined
     for u in universes:
@@ -41,10 +52,14 @@ if __name__ == "__main__":
 
     
     if data:
-        print(f"Heard data in universes {simplify_ranges([int(d) for d in sorted(data.keys())])}")
-        with open(f"dmx_data_{start}.json", "w") as f:
+        heard_universe_string = abbreviate_ranges([int(d) for d in sorted(data.keys())])
+        print(f"-\nHeard data in universes {heard_universe_string}")
+
+        filename = f"dmx_data_u{heard_universe_string.replace(",","u")}_t{start.strftime("%Y%m%d_%H%M%S")}.json"
+        print(f"Saving to {Path(filename)}")
+        with open(str(Path(filename)), "w") as f:
             json.dump(data, f)
     else:
-        print(f"No data heard in universes {args.universes}")
+        print(f"-\nNo data heard in any universes ({printable_ranges})")
     
     receiver.stop()
