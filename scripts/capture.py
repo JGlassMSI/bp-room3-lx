@@ -11,8 +11,16 @@ from _utils import drive_device
 
 parser = argparse.ArgumentParser("Capture sacn at a point in time")
 
-parser.add_argument("-u", "--universes", required=True, type=str, help="a comma- or dash-separated list of universes to capture (e.g. 1,2,3-5)")
-parser.add_argument("-t", "--time", type=int, help="How long to record data for (seconds)")
+parser.add_argument(
+    "-u",
+    "--universes",
+    required=True,
+    type=str,
+    help="a comma- or dash-separated list of universes to capture (e.g. 1,2,3-5)",
+)
+parser.add_argument(
+    "-t", "--time", type=int, help="How long to record data for (seconds)"
+)
 
 if __name__ == "__main__":
     args = parser.parse_args()
@@ -24,13 +32,16 @@ if __name__ == "__main__":
     receiver = sacn.sACNreceiver()
 
     for u in universes:
-        def closure(univ = u):
-            def callback(packet: sacn.DataPacket): 
+
+        def closure(univ=u):
+            def callback(packet: sacn.DataPacket):
                 if packet.dmxStartCode == 0x00:  # ignore non-DMX-data packets
                     if univ not in data:
                         data[univ] = packet.dmxData
-            receiver.register_listener('universe', callback, universe=univ)
+
+            receiver.register_listener("universe", callback, universe=univ)
             receiver.join_multicast(univ)
+
         closure()
 
     print(f"Looking for data from universes {printable_ranges}")
@@ -43,23 +54,21 @@ if __name__ == "__main__":
                     print(f"Removing callback from universe {seen}")
                     receiver._callbacks[seen] = []
                     receiver.leave_multicast(seen)
-            time.sleep(.1)
-
+            time.sleep(0.1)
 
     # optional: if multicast was previously joined
     for u in universes:
         receiver.leave_multicast(u)
 
-    
     if data:
         heard_universe_string = abbreviate_ranges([int(d) for d in sorted(data.keys())])
         print(f"-\nHeard data in universes {heard_universe_string}")
 
-        filename = f"dmx_data_u{heard_universe_string.replace(",","u")}_t{start.strftime("%Y%m%d_%H%M%S")}.json"
+        filename = f"dmx_data_u{heard_universe_string.replace(',', 'u')}_t{start.strftime('%Y%m%d_%H%M%S')}.json"
         print(f"Saving to {Path(filename)}")
         with open(str(Path(filename)), "w") as f:
             json.dump(data, f)
     else:
         print(f"-\nNo data heard in any universes ({printable_ranges})")
-    
+
     receiver.stop()

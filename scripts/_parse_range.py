@@ -2,8 +2,9 @@ from itertools import chain
 
 from typing import Iterable
 
+
 def _parse_range(rng: str) -> range:
-    parts = rng.split('-')
+    parts = rng.split("-")
     if 1 > len(parts) > 2:
         raise ValueError("Bad range: '%s'" % (rng,))
     parts = [int(i) for i in parts]
@@ -13,13 +14,16 @@ def _parse_range(rng: str) -> range:
         end, start = start, end
     return range(start, end + 1)
 
+
 def parse_ranges_str(rngs: str):
     # Turn a list like "1,2,3-5" into a list [1,2,3,4,5]
-    return sorted(set(chain(*[_parse_range(rng) for rng in rngs.split(',')])))
+    return sorted(set(chain(*[_parse_range(rng) for rng in rngs.split(",")])))
+
 
 # Source - https://stackoverflow.com/a/29418827
 # Posted by nvuono
 # Retrieved 2026-05-28, License - CC BY-SA 3.0
+
 
 def abbreviate_ranges(values: list[int]) -> str:
     seq = []
@@ -27,24 +31,23 @@ def abbreviate_ranges(values: list[int]) -> str:
     last = 0
 
     for index, val in enumerate(values):
-
         if last + 1 == val or index == 0:
             seq.append(val)
             last = val
         else:
             if len(seq) > 1:
-               final.append(str(seq[0]) + '-' + str(seq[len(seq)-1]))
+                final.append(str(seq[0]) + "-" + str(seq[len(seq) - 1]))
             else:
-               final.append(str(seq[0]))
+                final.append(str(seq[0]))
             seq = []
             seq.append(val)
             last = val
 
         if index == len(values) - 1:
             if len(seq) > 1:
-                final.append(str(seq[0]) + '-' + str(seq[len(seq)-1]))
+                final.append(str(seq[0]) + "-" + str(seq[len(seq) - 1]))
             else:
                 final.append(str(seq[0]))
 
-    final_str = ', '.join(map(str, final))
+    final_str = ", ".join(map(str, final))
     return final_str
