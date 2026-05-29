@@ -60,12 +60,12 @@ These scripts relies on the `sacn` package on PyPI.
 
 ## BP sACN Universe Notes
 
-Plinths use DMX universes 1-> 44
-Arches use DMX universes 47-> 160
+- Plinths use DMX universes 1-> 44
+- Arches use DMX universes 47-> 160
 
 ## BP Network Notes
 
-Plinths are 10.0.64.5->7
-Arches are 10.0.64.21->26
-Touchdesigner PC is 10.0.64.2
-NUC is 10.0.64.126
+- Plinths are 10.0.64.5->7
+- Arches are 10.0.64.21->26
+- Touchdesigner PC is 10.0.64.2
+- NUC is 10.0.64.126
