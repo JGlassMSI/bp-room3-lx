@@ -53,7 +53,13 @@ options:
 
 ## Dependencies
 
-These scripts relies on the `sacn` package on PyPI.
+### UV
+
+This repo is intended to be run with the [uv environment manager](https://docs.astral.sh/uv/). See the [installation instructions](https://docs.astral.sh/uv/getting-started/installation) to set up. Note that on windows, it's best to run uv's provided shell script as admin, so that uv is accessable to all users; a reboot is usually required after install to make uv available to all terminals.
+
+### Python
+
+These scripts rely on the `sacn` package on PyPI.
 
 [sacn on PyPI](https://pypi.org/project/sacn/)
 [Docs](https://github.com/Hundemeier/sacn)
