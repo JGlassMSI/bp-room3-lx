@@ -1,3 +1,9 @@
+# /// script
+# requires-python = ">=3.12"
+# dependencies = [
+#     "sacn>=1.11.0",
+# ]
+# ///
 import argparse
 import json
 
