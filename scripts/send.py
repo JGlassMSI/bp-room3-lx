@@ -17,7 +17,7 @@ parser = argparse.ArgumentParser("Send sacn lighting data")
 
 parser.add_argument("--debug", action="store_true", help="Send a fixed blue value to all universes")
 parser.add_argument("--color", choices=["red", "green", "blue"], help="debug color (only valid with --debug)")
-parser.add_argument("-u", "--universes", type=str, help="a comma- or dash-separated list of universes to capture", default="47-69")
+parser.add_argument("-u", "--universes", type=str, help="a comma- or dash-separated list of universes to capture (e.g. 1,2,3-5)", default="1-160")
 parser.add_argument("-f", "--file", help="json data file to open", default=r"C:\Users\trex\Documents\Blue Paradox\dmx_data_u47-69_t20260529_084747.json")
 
 # This is arbitrary UUID but needs to be the same forever

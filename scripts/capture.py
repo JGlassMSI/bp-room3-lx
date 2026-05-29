@@ -11,8 +11,8 @@ from _utils import drive_device
 
 parser = argparse.ArgumentParser("Capture sacn at a point in time")
 
-parser.add_argument("-u", "--universes", required=True, type=str, help="a comma-separated list of universes to capture")
-parser.add_argument("-t", "--time", type=int, help="How long to record data for")
+parser.add_argument("-u", "--universes", required=True, type=str, help="a comma- or dash-separated list of universes to capture (e.g. 1,2,3-5)")
+parser.add_argument("-t", "--time", type=int, help="How long to record data for (seconds)")
 
 if __name__ == "__main__":
     args = parser.parse_args()
